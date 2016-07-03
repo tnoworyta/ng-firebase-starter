@@ -4,7 +4,18 @@ app.controller('SignInController', ['$scope', function($scope) {
   $scope.login = function(user) {
    console.log('call #3');
     console.log(user);
+    PubSub.publish( 'authData', 'hello world!' );
   };
+}]);
+
+app.controller('StatusController', ['$scope', function($scope) {
+  $scope.status = {desc: 'Not signed in'}
+  var mySubscriber = function( msg, data ){
+    console.log( 'incoming msg =>', msg, data );
+    $scope.status.desc = 'ok'
+  };
+
+  PubSub.subscribe( 'authData', mySubscriber );
 }]);
 
 app.directive('signIn', function() {
@@ -26,4 +37,12 @@ app.directive('signIn', function() {
     '</section> ',
     controller: 'SignInController'
     };
+});
+
+app.directive('status', function() {
+  return {
+    restrict: 'E',
+    template: 'Status is {{status.desc}}',
+    controller: 'StatusController'
+  };
 });
