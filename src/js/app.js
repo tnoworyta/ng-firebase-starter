@@ -4,7 +4,7 @@ app.controller('SignInController', ['$scope', function($scope) {
   $scope.login = function(user) {
    console.log('call #3');
     console.log(user);
-    PubSub.publish( 'authData', 'hello world!' );
+    PubSub.publish( 'authData', 'connected!' );
   };
 }]);
 
@@ -12,7 +12,7 @@ app.controller('StatusController', ['$scope', function($scope) {
   $scope.status = {desc: 'Not signed in'}
   var mySubscriber = function( msg, data ){
     console.log( 'incoming msg =>', msg, data );
-    $scope.status.desc = 'ok ' + Date.now()
+    $scope.status.desc = data + ' ' + Date.now()
   };
 
   PubSub.subscribe( 'authData', mySubscriber );
