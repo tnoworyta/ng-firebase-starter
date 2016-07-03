@@ -1,18 +1,27 @@
-var app = angular.module("firebaseApp", []);
+var app = angular.module("firebaseApp", ["firebase"]);
 
-app.controller('SignInController', ['$scope', function($scope) {
+app.controller('SignInController', ['$scope', function($scope, $firebaseAuth) {
+  var ref = new Firebase("https://mdoc1.firebaseio.com");
+
   $scope.login = function(user) {
-   console.log('call #3');
     console.log(user);
-    PubSub.publish( 'authData', 'connected!' );
+    ref.authWithPassword({email: user.email, password: user.password}, function(error, authData) {
+      if (error) {
+        console.log("Login Failed!", error);
+      } else {
+        console.log("Logged in as:", authData);
+        PubSub.publish('authData', 'connected!');
+      }
+    });
   };
 }]);
 
 app.controller('StatusController', ['$scope', function($scope) {
   $scope.status = {desc: 'Not signed in'}
   var mySubscriber = function( msg, data ){
-    console.log( 'incoming msg =>', msg, data );
-    $scope.status.desc = data + ' ' + Date.now()
+    var timestamp = Date.now();
+    console.log('incoming msg =>', msg, data, timestamp);
+    $scope.status.desc = data + ' @ ' + timestamp
   };
 
   PubSub.subscribe( 'authData', mySubscriber );
